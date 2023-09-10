@@ -54,7 +54,7 @@ class Ingredient(models.Model):
         return f'{self.name} {self.measurement_unit}'
 
 
-class CountIngredinetInRecipe(models.Model):
+class IngredinetInRecipe(models.Model):
     """Модель количества ингредиентов в рецепте """
     ingredient = models.ForeignKey(
         Ingredient,
@@ -102,7 +102,7 @@ class Recipe(models.Model):
         'Описание рецепта',
     )
     ingredients = models.ManyToManyField(
-        CountIngredinetInRecipe,
+        IngredinetInRecipe,
         verbose_name='Ингредиенты в рецепте',
         related_name='recipes',
     )
