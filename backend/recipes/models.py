@@ -13,6 +13,7 @@ class Tag(models.Model):
     name = models.CharField(
         'Название',
         unique=True,
+        max_length=200
     )
     color = ColorField(
         'Цвет в формате Hex',
@@ -96,7 +97,7 @@ class Recipe(models.Model):
     image = models.ImageField(
         'Изображение',
         blank=True,
-        upload_to = 'recipes/images',
+        upload_to='recipes/images',
     )
     text = models.TextField(
         'Описание рецепта',
@@ -127,3 +128,63 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Favourite(models.Model):
+    """Модель избранного рецепта"""
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='Пользователь',
+        related_name='favourites'
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        verbose_name='Рецепт',
+        related_name='favourites'
+    )
+
+    class Meta:
+        verbose_name = 'Избранный рецепт'
+        verbose_name_plural = 'Избранные рецепты'
+        ordering = ('user',)
+        constraints = [
+            UniqueConstraint(
+                fields=('user', 'recipe'),
+                name='favourites_for_user'),
+        ]
+
+    def __str__(self):
+        return f'{self.user} добавил "{self.recipe}" в избранные рецепты'
+
+
+class ShoppingList(models.Model):
+    """Модель списка покупок"""
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='Пользователь',
+        related_name='shopping_list',
+
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        verbose_name='Рецепт',
+        related_name='shopping_list'
+    )
+
+    class Meta:
+        verbose_name = 'Список покупок'
+        verbose_name_plural = 'Список покупок'
+        constraints = [
+            UniqueConstraint(
+                fields=('user', 'recipe'),
+                name='shopping_list'),
+        ]
+
+    def __str__(self):
+        return f'{self.user} добавил "{self.recipe}" в список покупок'
