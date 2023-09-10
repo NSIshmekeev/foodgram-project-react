@@ -6,8 +6,8 @@ djangorestframework-simplejwt==4.7.2
 PyJWT==2.1.0
 djoser==2.1.0
 webcolors==1.11.1
-psycopg2-binary==2.9.3
-Pillow==9.0.0
+psycopg2-binary==2.9.7
+Pillow==10.0.0
 pytest==6.2.4
 pytest-django==4.4.0
 pytest-pythonpath==0.7.3
