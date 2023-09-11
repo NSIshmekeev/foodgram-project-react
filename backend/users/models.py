@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
     """Модель пользователя"""
+
     username = models.CharField('Логин',)
     first_name = models.CharField('Имя',)
     last_name = models.CharField('Фамилия',)
@@ -33,7 +34,7 @@ class Follow(models.Model):
         verbose_name='Подписчик',
         on_delete=models.CASCADE,
     )
-    following = models.ForeignKey(
+    author = models.ForeignKey(
         User,
         related_name='following',
         verbose_name='Автор',
