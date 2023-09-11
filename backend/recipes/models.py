@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models import UniqueConstraint
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from colorfield.fields import ColorField
@@ -72,7 +71,7 @@ class IngredinetInRecipe(models.Model):
         verbose_name = 'Ингредиент рецепта'
         verbose_name_plural = 'Ингредиенты рецепта'
         constraints = [
-            UniqueConstraint(
+            models.UniqueConstraint(
                 fields=('ingredient', 'count'),
                 name='unique_ingredient_in_recipe'),
         ]
@@ -151,7 +150,7 @@ class Favourite(models.Model):
         verbose_name_plural = 'Избранные рецепты'
         ordering = ('user',)
         constraints = [
-            UniqueConstraint(
+            models.UniqueConstraint(
                 fields=('user', 'recipe'),
                 name='favourites_for_user'),
         ]
@@ -181,7 +180,7 @@ class ShoppingList(models.Model):
         verbose_name = 'Список покупок'
         verbose_name_plural = 'Список покупок'
         constraints = [
-            UniqueConstraint(
+            models.UniqueConstraint(
                 fields=('user', 'recipe'),
                 name='shopping_list'),
         ]

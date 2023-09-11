@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     'djoser',
     'django_filters',
     'recipes.apps.RecipesConfig',
+    'users.apps.UsersConfig',
     'colorfield',
 ]
 
