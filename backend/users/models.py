@@ -5,14 +5,15 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     """Модель пользователя"""
 
-    username = models.CharField('Логин',)
-    first_name = models.CharField('Имя',)
-    last_name = models.CharField('Фамилия',)
+    username = models.CharField('Логин', max_length=50)
+    first_name = models.CharField('Имя', max_length=50)
+    last_name = models.CharField('Фамилия', max_length=50)
     email = models.EmailField(
         'Элетронная почта',
         max_length=254,
         unique=True,
     )
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
 
@@ -46,6 +47,6 @@ class Follow(models.Model):
         verbose_name_plural = 'Подписки'
         ordering = ('-id',)
         constraints = [
-           models.UniqueConstraint(fields=['user', 'following'],
+           models.UniqueConstraint(fields=['user', 'author'],
                                    name='name of constraint')
         ]

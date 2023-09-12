@@ -5,7 +5,7 @@ from .models import User, Follow
 class UserAdmin(admin.ModelAdmin):
     """Управление пользователем"""
 
-    list_display = ('id', 'username', 'firt_name', 'last_name',
+    list_display = ('id', 'username', 'first_name', 'last_name',
                     'email')
     list_display_links = ('id', 'username')
     list_filter = ('email', 'username')
@@ -14,7 +14,7 @@ class UserAdmin(admin.ModelAdmin):
 class FollowAdmin(admin.ModelAdmin):
     """Управление подписками на автора"""
 
-    list_display = ('id', 'user', 'following')
+    list_display = ('id', 'user', 'author')
     search_fields = ('user',)
 
 
