@@ -11,15 +11,14 @@ class MyUserCreateSerializer(UserCreateSerializer):
 
     class Meta:
         model = User
-        fields = tuple(User.REQUIRED_FIELDS) + (
-            User.USERNAME_FIELD, 'password'
-        )
+        fields = ('id', 'username', 'first_name', 'last_name', 'email',
+                  'password')
 
 
 class MyUserSerializer(UserSerializer):
-    is_subscribe = SerializerMethodField(read_only=True)
+    is_subscribed = SerializerMethodField(read_only=True)
 
-    def get_is_subscribe(self, author):
+    def get_is_subscribed(self, author):
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
@@ -27,8 +26,8 @@ class MyUserSerializer(UserSerializer):
 
     class Meta:
         model = User
-        fields = ((User.USERNAME_FIELD, 'id')
-                  + tuple(User.REQUIRED_FIELDS) + ('is_subscribe',))
+        fields = ('id', 'username', 'first_name', 'last_name', 'email',
+                  'is_subscribed')
 
 
 class ShortRecipeSerializer(ModelSerializer):
@@ -37,13 +36,14 @@ class ShortRecipeSerializer(ModelSerializer):
         fields = ('id', 'name', 'image', 'cooking_time')
 
 
-class FollowSerializer(ModelSerializer):
+class FollowSerializer(MyUserSerializer):
     recipes = SerializerMethodField()
     recipes_count = SerializerMethodField()
 
     class Meta:
-        fields = MyUserSerializer.Meta.fields + ('recipes', 'recipes_count')
-        read_only_feilds = ('email', 'recipes')
+        model = User
+        fields = ('id', 'username', 'first_name', 'last_name', 'email',
+                  'is_subscribed', 'recipes', 'recipes_count')
 
     def validate(self, data):
         author = self.instance
@@ -68,3 +68,6 @@ class FollowSerializer(ModelSerializer):
         serializer = ShortRecipeSerializer(recipes, many=True,
                                            read_only=True)
         return serializer.data
+
+    def get_recipes_count(self, obj):
+        return Recipe.objects.filter(author=obj).count()

@@ -18,15 +18,17 @@ class MyUserViewSet(UserViewSet):
     queryset = User.objects.all()
     serializer_class = MyUserSerializer
     pagination_class = CustomPageNumberPagination
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     @action(
         methods=['post', 'delete'],
         detail=True,
         permission_classes=[permissions.IsAuthenticated]
     )
-    def subscribe(self, request):
+    def subscribe(self, request, **kwargs):
         user = request.user
-        author = get_object_or_404(User, id=self.request.get('id'))
+        author_id = self.kwargs.get('id')
+        author = get_object_or_404(User, id=author_id)
 
         if request.method == 'POST':
             serializer = FollowSerializer(author, data=request.data,
@@ -41,7 +43,7 @@ class MyUserViewSet(UserViewSet):
             return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
-        methods='GET',
+        methods=['get'],
         detail=False,
         permission_classes=[permissions.IsAuthenticated]
     )
