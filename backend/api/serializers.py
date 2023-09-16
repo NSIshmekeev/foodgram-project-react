@@ -1,10 +1,16 @@
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
+from rest_framework.serializers import (ModelSerializer,
+                                        SerializerMethodField,
+                                        ReadOnlyField, IntegerField,
+                                        PrimaryKeyRelatedField)
 from rest_framework.exceptions import ValidationError
 from rest_framework import status
 from djoser.serializers import UserSerializer, UserCreateSerializer
+from drf_extra_fields.fields import Base64ImageField
+from django.shortcuts import get_object_or_404
 
 from users.models import User, Follow
-from recipes.models import Recipe
+from recipes.models import (Recipe, Tag, Ingredient, IngredientInRecipe,
+                            Favourite, ShoppingList)
 
 
 class MyUserCreateSerializer(UserCreateSerializer):
@@ -69,5 +75,149 @@ class FollowSerializer(MyUserSerializer):
                                            read_only=True)
         return serializer.data
 
-    def get_recipes_count(self, obj):
-        return Recipe.objects.filter(author=obj).count()
+    def get_recipes_count(self, author):
+        return author.recipes.count()
+
+
+class TagSerializer(ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ('id', 'name', 'color', 'slug')
+
+
+class IngredientSerializer(ModelSerializer):
+    class Meta:
+        model = Ingredient
+        fields = ('id', 'name', 'measurement_unit')
+
+
+class IngredientInRecipeSerializer(ModelSerializer):
+    id = ReadOnlyField(source='ingredient.id')
+    name = ReadOnlyField(source='ingredient.name')
+    measurement_unit = ReadOnlyField(source='ingredient.measurement_unit')
+
+    class Meta:
+        model = IngredientInRecipe
+        fields = ('id', 'name', 'measurement_unit', 'count')
+
+
+class IngredientInRecipeCreateSerializer(ModelSerializer):
+    id = IntegerField(write_only=True)
+    amount = IntegerField(required=True)
+    name = SerializerMethodField()
+    measurement_unit = SerializerMethodField()
+
+    class Meta:
+        model = IngredientInRecipe
+        fields = ('id', 'amount', 'name', 'measurement_unit')
+
+    def get_measurement_unit(self, ingredient):
+        measurement_unit = ingredient.ingredient.measurement_unit
+        return measurement_unit
+
+    def get_name(self, ingredient):
+        name = ingredient.ingredient.name
+        return name
+
+
+class RecipeReadSerializer(ModelSerializer):
+    tags = TagSerializer(many=True, read_only=True)
+    author = MyUserSerializer(read_only=True)
+    ingredient = IngredientInRecipe(many=True)
+    image = Base64ImageField()
+    is_favourited = SerializerMethodField(read_only=True)
+    is_in_shopping_list = SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Recipe
+        fields = ('id', 'author', 'name', 'tags', 'ingredients',
+                  'is_favourited', 'is_in_shopping_list',
+                  'image', 'text', 'cooking_time')
+
+        def get_is_favourited(self, recipe):
+            user = self.context.get('request').user
+            if user.is_anonymous:
+                return False
+            return Favourite.objects.filter(user=user, recipe=recipe)
+
+        def get_is_in_shopping_list(self, recipe):
+            user = self.context.get('request').user
+            if user.is_anonymous:
+                return False
+            return ShoppingList.objects.filter(recipe=recipe).exists()
+
+
+class RecipeCreateUpdateSerializer(ModelSerializer):
+    tags = PrimaryKeyRelatedField(many=True, queryset=Tag.objects.all())
+    author = MyUserSerializer(read_only=True)
+    ingredients = IngredientInRecipeSerializer(many=True)
+    image = Base64ImageField()
+
+    class Meta:
+        model = Recipe
+        fields = ('id', 'author', 'name', 'tags', 'ingredients',
+                  'image', 'text', 'cooking_time')
+
+    def validate_tags(self, value):
+        if not value:
+            return ValidationError(
+                'Нужно выбрать хотя бы один тег!'
+            )
+        if len(value) != set(value):
+            return ValidationError(
+                'Теги не уникальны'
+            )
+        return value
+
+    def validate_ingredients(self, value):
+        if not value:
+            return ValidationError(
+                'Нужно чтобы был хотя-бы один игредиент'
+            )
+        ingredients = [item['id'] for item in value]
+        for ingredient in ingredients:
+            if ingredients.count(ingredient) > 1:
+                raise ValidationError(
+                    'У рецепта не может быть два одинаковых ингредиента.'
+                )
+        return value
+
+    def create(self, validated_data):
+        author = self.context.get('request').user
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients')
+        recipe = Recipe.objects.create(author=author, **validated_data)
+        recipe.tags.set(tags)
+        for ingredient in ingredients:
+            count = ingredient['count']
+            ingredient = get_object_or_404(Ingredient, pk=ingredient['id'])
+            IngredientInRecipe.objects.create(
+                recipe=recipe,
+                ingredient=ingredient,
+                count=count
+            )
+        return recipe
+
+    def update(self, instance, validated_data):
+        tags = validated_data.pop('tags', None)
+        if tags is not None:
+            instance.tags.set(tags)
+        ingredients = validated_data.pop('ingredients', None)
+        if ingredients is not None:
+            instance.ingredients.clear()
+            for ingredient in ingredients:
+                count = ingredient['count']
+                ingredient = get_object_or_404(Ingredient, pk=ingredient['id'])
+
+                IngredientInRecipe.objects.update_or_create(
+                    recipe=instance,
+                    ingredient=ingredient,
+                    defaults={'count': count}
+                )
+
+        return super().update(instance, validated_data)
+
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        context = {'request': request}
+        return RecipeReadSerializer(instance, context=context).data
