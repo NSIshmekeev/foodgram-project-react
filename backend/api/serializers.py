@@ -161,24 +161,28 @@ class RecipeCreateUpdateSerializer(ModelSerializer):
     def validate_tags(self, value):
         if not value:
             return ValidationError(
-                'Нужно выбрать хотя бы один тег!'
+                detail='Нужно выбрать хотя бы один тег!',
+                code=status.HTTP_400_BAD_REQUEST
             )
         if len(value) != set(value):
             return ValidationError(
-                'Теги не уникальны'
+                detail='Теги не уникальны',
+                code=status.HTTP_400_BAD_REQUEST
             )
         return value
 
     def validate_ingredients(self, value):
         if not value:
             return ValidationError(
-                'Нужно чтобы был хотя-бы один игредиент'
+                detail='Нужно чтобы был хотя-бы один игредиент',
+                code=status.HTTP_400_BAD_REQUEST
             )
         ingredients = [item['id'] for item in value]
         for ingredient in ingredients:
             if ingredients.count(ingredient) > 1:
                 raise ValidationError(
-                    'У рецепта не может быть два одинаковых ингредиента.'
+                    detail='У рецепта не может быть два одинаковых ингредиента.',
+                    code=status.HTTP_400_BAD_REQUEST
                 )
         return value
 
