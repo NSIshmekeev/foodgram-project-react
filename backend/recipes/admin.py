@@ -1,7 +1,8 @@
 from django.contrib import admin
 
-from .models import (Tag, Ingredient, IngredinetInRecipe,
+from .models import (Tag, Ingredient, IngredientInRecipe,
                      Recipe, Favourite, ShoppingList)
+
 
 class TagAdmin(admin.ModelAdmin):
     """Управление тегами"""
@@ -31,7 +32,7 @@ class RecipesAdmin(admin.ModelAdmin):
 class IngredientInRecipeAdmin(admin.ModelAdmin):
     """Управление ингредиентами в рецепте"""
 
-    list_display = ('ingredient', 'count')
+    list_display = ('ingredient', 'amount')
     list_filter = ('ingredient',)
 
 
@@ -54,6 +55,6 @@ class ShoppingListAdmin(admin.ModelAdmin):
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(Recipe, RecipesAdmin)
-admin.site.register(IngredinetInRecipe, IngredientInRecipeAdmin)
+admin.site.register(IngredientInRecipe, IngredientInRecipeAdmin)
 admin.site.register(Favourite, FavouriteAdmin)
 admin.site.register(ShoppingList, ShoppingListAdmin)

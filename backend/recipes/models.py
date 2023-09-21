@@ -54,14 +54,14 @@ class Ingredient(models.Model):
         return f'{self.name} {self.measurement_unit}'
 
 
-class IngredinetInRecipe(models.Model):
+class IngredientInRecipe(models.Model):
     """Модель количества ингредиентов в рецепте """
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
         related_name='ingredient_list',
     )
-    count = models.IntegerField(
+    amount = models.IntegerField(
         'Количество',
         validators=[MinValueValidator(1)],
         default=1
@@ -72,17 +72,16 @@ class IngredinetInRecipe(models.Model):
         verbose_name_plural = 'Ингредиенты рецепта'
         constraints = [
             models.UniqueConstraint(
-                fields=('ingredient', 'count'),
+                fields=('ingredient', 'amount'),
                 name='unique_ingredient_in_recipe'),
         ]
 
     def __str__(self):
-        return f'{self.ingredient} - {self.count}'
+        return f'{self.ingredient} - {self.amount}'
 
 
 class Recipe(models.Model):
     """Модель рецепта"""
-
     author = models.ForeignKey(
         User,
         verbose_name='Автор рецепта',
@@ -102,7 +101,7 @@ class Recipe(models.Model):
         'Описание рецепта',
     )
     ingredients = models.ManyToManyField(
-        IngredinetInRecipe,
+        IngredientInRecipe,
         verbose_name='Ингредиенты в рецепте',
         related_name='recipes',
     )
@@ -113,7 +112,7 @@ class Recipe(models.Model):
     )
     cooking_time = models.PositiveSmallIntegerField(
         'Время приготовления, мин.',
-        validators=[MinValueValidator(1)],
+        validators=[MinValueValidator(1, message='Мин. время приготовления 1 минута')],
     )
     pub_date = models.DateTimeField(
         'Дата публикации',

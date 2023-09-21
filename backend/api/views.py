@@ -36,7 +36,7 @@ class RecipeViewSet(ModelViewSet):
     pagination_class = CustomPageNumberPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
-    permission_classes = IsAuthorAdminOrReadOnly
+    permission_classes = [IsAuthorAdminOrReadOnly]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
