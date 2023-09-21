@@ -148,7 +148,8 @@ class RecipeReadSerializer(ModelSerializer):
 
 
 class RecipeCreateUpdateSerializer(ModelSerializer):
-    tags = PrimaryKeyRelatedField(required=True, many=True, queryset=Tag.objects.all())
+    tags = PrimaryKeyRelatedField(required=True, many=True,
+                                  queryset=Tag.objects.all())
     author = MyUserSerializer(read_only=True)
     ingredients = IngredientInRecipeCreateSerializer(many=True)
     image = Base64ImageField()
@@ -182,7 +183,8 @@ class RecipeCreateUpdateSerializer(ModelSerializer):
         for ingredient in ingredients:
             if ingredients.count(ingredient) > 1:
                 raise ValidationError(
-                    detail='У рецепта не может быть два одинаковых ингредиента.',
+                    detail=('У рецепта не может быть'
+                            ' два одинаковых ингредиента.'),
                     code=status.HTTP_400_BAD_REQUEST
                 )
         return value

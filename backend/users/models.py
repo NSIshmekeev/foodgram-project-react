@@ -47,6 +47,6 @@ class Follow(models.Model):
         verbose_name_plural = 'Подписки'
         ordering = ('-id',)
         constraints = [
-           models.UniqueConstraint(fields=['user', 'author'],
-                                   name='name of constraint')
+            models.UniqueConstraint(fields=['user', 'author'],
+                                    name='name of constraint')
         ]
