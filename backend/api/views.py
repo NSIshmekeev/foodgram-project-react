@@ -88,18 +88,17 @@ class RecipeViewSet(ModelViewSet):
     def download_shopping_cart(self, request):
         user = request.user
         buy_list = IngredientInRecipe.objects.filter(
-            recipes__shopping_list__user=user).values(
+            recipe__shopping_list__user=user).values(
             'ingredient__name', 'ingredient__measurement_unit').annotate(
             amount=Sum('amount')
         )
-        print(buy_list)
         text = 'Список покупок \n'
         for item in buy_list:
             amount = item['amount']
             name = item['ingredient__name']
             measurement_unit = item['ingredient__measurement_unit']
             text += (
-                f'{name} {measurement_unit}, '
+                f'{name} ({measurement_unit}), '
                 f'{amount}\n'
             )
         response = HttpResponse(text, content_type="text/plain")
