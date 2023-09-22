@@ -1,6 +1,6 @@
 from rest_framework.serializers import (ModelSerializer,
                                         SerializerMethodField,
-                                        ReadOnlyField, IntegerField,
+                                        IntegerField,
                                         PrimaryKeyRelatedField)
 from rest_framework.exceptions import ValidationError
 from rest_framework import status
@@ -95,7 +95,9 @@ class IngredientInRecipeCreateSerializer(ModelSerializer):
     id = IntegerField(write_only=True)
     amount = IntegerField(required=True)
     name = SerializerMethodField(source='ingredient.name')
-    measurement_unit = SerializerMethodField(source='ingredient.measurement_unit')
+    measurement_unit = SerializerMethodField(
+        source='ingredient.measurement_unit'
+    )
 
     class Meta:
         model = IngredientInRecipe
