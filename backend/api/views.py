@@ -55,11 +55,17 @@ class RecipeViewSet(ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def delete_from_list(self, model, user, pk):
-        if not model.objects.filter(user=user, recipe__id=pk).exists():
-            return Response({'errors': 'Рецепт уже удален!'},
-                            status=status.HTTP_400_BAD_REQUEST)
-        model.objects.filter(user=user, recipe__id=pk).delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        # if not model.objects.filter(user=user, recipe__id=pk).exists():
+        #     return Response({'errors': 'Рецепт уже удален!'},
+        #                     status=status.HTTP_400_BAD_REQUEST)
+        # model.objects.filter(user=user, recipe__id=pk).delete()
+        # return Response(status=status.HTTP_204_NO_CONTENT)
+        obj = model.objects.filter(user=user, recipe__id=pk)
+        if obj.exists():
+            obj.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({'errors': 'Рецепт уже удален!'},
+                        status=status.HTTP_400_BAD_REQUEST)
 
     @action(
         detail=True,
@@ -90,11 +96,11 @@ class RecipeViewSet(ModelViewSet):
         buy_list = IngredientInRecipe.objects.filter(
             recipe__shopping_list__user=user).values(
             'ingredient__name', 'ingredient__measurement_unit').annotate(
-            amount=Sum('amount')
+            total_number=Sum('amount')
         )
         text = 'Список покупок \n'
         for item in buy_list:
-            amount = item['amount']
+            amount = item['total_number']
             name = item['ingredient__name']
             measurement_unit = item['ingredient__measurement_unit']
             text += (

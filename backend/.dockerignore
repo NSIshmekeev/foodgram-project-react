@@ -1,0 +1,16 @@
+#Others
+.git
+db.sqlite3
+
+#IDE
+.idea
+.vscode
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/

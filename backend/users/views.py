@@ -5,9 +5,9 @@ from rest_framework import permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
+
 from api.serializers import CustomUserSerializer, FollowSerializer
 from api.pagination import CustomPageNumberPagination
-
 from .models import Follow
 
 User = get_user_model()

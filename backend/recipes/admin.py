@@ -29,7 +29,7 @@ class RecipeIngredientsAdmin(admin.TabularInline):
 class RecipesAdmin(admin.ModelAdmin):
     """Управление рецептами"""
 
-    list_display = ('name', 'author')
+    list_display = ('id', 'name', 'author')
     list_display_links = ('name',)
     search_fields = ('name',)
     list_filter = ('author', 'name', 'tags')
