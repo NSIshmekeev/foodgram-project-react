@@ -46,12 +46,6 @@ class FollowSerializer(CustomUserSerializer):
     recipes_count = SerializerMethodField()
 
     class Meta(CustomUserSerializer.Meta):
-        # model = User
-        # fields = ('id', 'username', 'first_name', 'last_name', 'email',
-        #           'is_subscribed', 'recipes', 'recipes_count')
-        # read_only_fields = ('email', 'username')
-        # model = Follow
-        # fields = ('author', 'user', 'recipes_count', 'recipes')
         fields = (
             'email',
             'id',
@@ -62,21 +56,6 @@ class FollowSerializer(CustomUserSerializer):
             'recipes',
             'recipes_count',
         )
-
-    # def validate_follow(self, data):
-    #     author = get_object_or_404(User, id=data['author'])
-    #     user = get_object_or_404(User, id=data['user'])
-    #     if Follow.objects.filter(author=author, user=user).exists():
-    #         raise ValidationError(
-    #             detail='Вы уже подписаны',
-    #             code=status.HTTP_400_BAD_REQUEST
-    #         )
-    #     if user == author:
-    #         raise ValidationError(
-    #             detail='Невозможно подписаться на самого себя',
-    #             code=status.HTTP_400_BAD_REQUEST
-    #         )
-    #     return data
 
     def get_recipes(self, author):
         recipes = author.recipes.all()

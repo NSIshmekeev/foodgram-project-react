@@ -39,11 +39,6 @@ class CustomUserViewSet(UserViewSet):
             Follow.objects.create(user=user, author=author)
             serializer = FollowSerializer(author, context={'request': request})
             return Response(serializer.data, status.HTTP_201_CREATED)
-            # serializer = FollowSerializer(data=request.data)
-            # serializer.is_valid(raise_exception=True)
-            # Follow.objects.create(user=user, author=author)
-            # return Response(serializer.data, status=status.HTTP_201_CREATED)
-
         subscription = get_object_or_404(Follow, user=user, author=author)
         subscription.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
