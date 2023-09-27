@@ -51,11 +51,13 @@ class FollowSerializer(CustomUserSerializer):
         # fields = ('id', 'username', 'first_name', 'last_name', 'email',
         #           'is_subscribed', 'recipes', 'recipes_count')
         fields = ('user', 'author')
-        read_only_fields = ('email', 'username')
+        read_only_fields = ('email')
 
-    def validate(self, data):
-        author = get_object_or_404(User, id=data['author'])
-        user = get_object_or_404(User, id=data['user'])
+    def validate_follow(self, data):
+        # author = get_object_or_404(User, id=data['author'])
+        # user = get_object_or_404(User, id=data['user'])
+        author = self.instance
+        user = self.context.get('request').user
         if Follow.objects.filter(author=author, user=user).exists():
             raise ValidationError(
                 detail='Вы уже подписаны',
