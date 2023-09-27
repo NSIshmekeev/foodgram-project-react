@@ -67,12 +67,19 @@ class FollowSerializer(CustomUserSerializer):
         return data
 
     def get_recipes(self, author):
-        recipes = author.recipes.all()
+        # recipes = author.recipes.all()
+        # request = self.context.get('request')
+        # if 'recipes_limit' in request.GET:
+        #     recipes = recipes[:int(request.GET['recipes_limit'])]
+        # serializer = ShortRecipeSerializer(recipes, many=True,
+        #                                    read_only=True)
+        # return serializer.data
         request = self.context.get('request')
-        if 'recipes_limit' in request.GET:
-            recipes = recipes[:int(request.GET['recipes_limit'])]
-        serializer = ShortRecipeSerializer(recipes, many=True,
-                                           read_only=True)
+        limit = request.GET.get('recipes_limit')
+        recipes = author.recipes.all()
+        if limit:
+            recipes = recipes[:int(limit)]
+        serializer = ShortRecipeSerializer(recipes, many=True, read_only=True)
         return serializer.data
 
     def get_recipes_count(self, author):
@@ -122,13 +129,13 @@ class RecipeReadSerializer(ModelSerializer):
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
-        return Favourite.objects.filter(user=user, recipe=recipe)
+        return Favourite.objects.filter(user=user, recipe=recipe).exists()
 
     def get_is_in_shopping_cart(self, recipe):
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
-        return ShoppingList.objects.filter(recipe=recipe).exists()
+        return ShoppingList.objects.filter(user=user, recipe=recipe).exists()
 
     def get_ingredients(self, obj):
         recipe = obj

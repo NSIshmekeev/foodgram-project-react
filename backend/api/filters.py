@@ -1,34 +1,37 @@
-from django.contrib.auth import get_user_model
-from django_filters import FilterSet, filters
+from django_filters.rest_framework import (BooleanFilter, FilterSet,
+                                           ModelMultipleChoiceFilter,
+                                           filters)
 
-from recipes.models import Recipe, Tag
+from recipes.models import Recipe, Tag, Ingredient
 
-User = get_user_model()
+
+class IngredientFilter(FilterSet):
+    name = filters.CharFilter(lookup_expr='startswith')
+
+    class Meta:
+        model = Ingredient
+        fields = ['name']
 
 
 class RecipeFilter(FilterSet):
-    tags = filters.ModelMultipleChoiceFilter(
-        field_name='tags__slug',
-        to_field_name='slug',
+    tags = ModelMultipleChoiceFilter(
         queryset=Tag.objects.all(),
+        field_name='tags__slug',
+        to_field_name='slug'
     )
-
-    is_favourited = filters.BooleanFilter(method='filter_is_favourited')
-    is_in_shopping_list = filters.BooleanFilter(
-        method='filter_is_in_shopping_list')
+    is_in_shopping_cart = BooleanFilter(method='get_is_in_shopping_cart')
+    is_favorited = BooleanFilter(method='get_is_favorited')
 
     class Meta:
         model = Recipe
-        fields = ('tags', 'author',)
+        fields = ('tags', 'author', 'is_in_shopping_cart', 'is_favorited')
 
-    def filter_is_favourited(self, queryset, name, value):
-        user = self.request.user
-        if value and not user.is_anonymous:
-            return queryset.filter(favourites__user=user)
+    def get_is_in_shopping_cart(self, queryset, name, value):
+        if self.request.user.is_authenticated and value:
+            return queryset.filter(shopping_list__user=self.request.user)
         return queryset
 
-    def filter_is_in_shopping_list(self, queryset, name, value):
-        user = self.request.user
-        if value and not user.is_anonymous:
-            return queryset.filter(shopping_list__user=user)
+    def get_is_favorited(self, queryset, name, value):
+        if self.request.user.is_authenticated and value:
+            return queryset.filter(favourites__user=self.request.user)
         return queryset

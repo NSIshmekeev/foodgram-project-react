@@ -17,7 +17,6 @@ class Command(BaseCommand):
             encoding='utf-8'
         ) as file:
             data = csv.reader(file)
-            print(data)
             Ingredient.objects.bulk_create(
                 (Ingredient(
                     name=row[0],
