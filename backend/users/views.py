@@ -1,5 +1,3 @@
-from api.pagination import CustomPageNumberPagination
-from api.serializers import CustomUserSerializer, FollowSerializer
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
@@ -9,6 +7,8 @@ from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 
+from api.pagination import CustomPageNumberPagination
+from api.serializers import CustomUserSerializer, FollowSerializer
 from .models import Follow
 
 User = get_user_model()

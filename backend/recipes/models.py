@@ -54,39 +54,6 @@ class Ingredient(models.Model):
         return f'{self.name} {self.measurement_unit}'
 
 
-# class IngredientInRecipe(models.Model):
-#     """Модель количества ингредиентов в рецепте """
-#     recipe = models.ForeignKey(
-#         Recipe,
-#         on_delete=models.CASCADE,
-#         related_name='ingredient_list',
-#         verbose_name='Рецепт',
-#     )
-#
-#     ingredient = models.ForeignKey(
-#         Ingredient,
-#         on_delete=models.CASCADE,
-#         related_name='ingredient_list',
-#     )
-#     amount = models.IntegerField(
-#         'Количество',
-#         validators=[MinValueValidator(1)],
-#         default=1
-#     )
-#
-#     class Meta:
-#         verbose_name = 'Ингредиент рецепта'
-#         verbose_name_plural = 'Ингредиенты рецепта'
-#         constraints = [
-#             models.UniqueConstraint(
-#                 fields=('ingredient', 'amount'),
-#                 name='unique_ingredient_in_recipe'),
-#         ]
-#
-#     def __str__(self):
-#         return f'{self.ingredient} - {self.amount}'
-
-
 class Recipe(models.Model):
     """Модель рецепта"""
     author = models.ForeignKey(
