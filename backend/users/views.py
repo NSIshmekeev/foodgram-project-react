@@ -28,12 +28,22 @@ class CustomUserViewSet(UserViewSet):
         author = get_object_or_404(User, id=id)
 
         if request.method == 'POST':
-            # data = {'user': user.id,
-            #         'author': author.id}
-            serializer = FollowSerializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
+            if user == author:
+                return Response(
+                    'Нельзя подписаться на себя',
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            if Follow.objects.filter(user=user, author=author).exists():
+                return Response('Вы уже подписаны',
+                                status=status.HTTP_400_BAD_REQUEST)
             Follow.objects.create(user=user, author=author)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            serializer = FollowSerializer(author, context={'request': request})
+            return Response(serializer.data, status.HTTP_201_CREATED)
+            # serializer = FollowSerializer(data=request.data)
+            # serializer.is_valid(raise_exception=True)
+            # Follow.objects.create(user=user, author=author)
+            # return Response(serializer.data, status=status.HTTP_201_CREATED)
+
         subscription = get_object_or_404(Follow, user=user, author=author)
         subscription.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
