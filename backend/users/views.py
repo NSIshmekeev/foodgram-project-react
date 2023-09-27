@@ -27,8 +27,8 @@ class CustomUserViewSet(UserViewSet):
     )
     def subscribe(self, request, id):
         user = request.user
-        # author_id = self.kwargs.get('id')
-        author = get_object_or_404(User, id=id)
+        author_id = self.kwargs.get('id')
+        author = get_object_or_404(User, id=author_id)
 
         if request.method == 'POST':
             serializer = FollowSerializer(author, data=request.data,
