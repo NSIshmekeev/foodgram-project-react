@@ -78,7 +78,8 @@ class FollowSerializer(CustomUserSerializer):
         # recipes = author.recipes.all()
         # if limit:
         #     recipes = recipes[:int(limit)]
-        # serializer = ShortRecipeSerializer(recipes, many=True, read_only=True)
+        # serializer = ShortRecipeSerializer(recipes,
+        # many=True, read_only=True)
         # return serializer.data
 
     def get_recipes_count(self, author):
