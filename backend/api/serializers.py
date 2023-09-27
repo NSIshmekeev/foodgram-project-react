@@ -46,7 +46,7 @@ class FollowSerializer(CustomUserSerializer):
     recipes_count = SerializerMethodField()
 
     class Meta(UserSerializer.Meta):
-        model = User
+        model = Follow
         fields = ('id', 'username', 'first_name', 'last_name', 'email',
                   'is_subscribed', 'recipes', 'recipes_count')
 

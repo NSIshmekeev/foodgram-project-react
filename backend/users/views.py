@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
-from djoser.permissions import CurrentUserOrAdminOrReadOnly
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -22,7 +21,7 @@ class CustomUserViewSet(UserViewSet):
     @action(
         methods=['post', 'delete'],
         detail=True,
-        permission_classes=[CurrentUserOrAdminOrReadOnly]
+        permission_classes=[IsAuthenticated]
     )
     def subscribe(self, request, **kwargs):
         user = request.user
