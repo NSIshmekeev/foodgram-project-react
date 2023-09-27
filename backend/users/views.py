@@ -24,7 +24,7 @@ class CustomUserViewSet(UserViewSet):
         detail=True,
         permission_classes=[IsAuthenticated]
     )
-    def subscribe(self, request, id):
+    def subscribe(self, request, **kwargs):
         user = request.user
         author_id = self.kwargs.get('id')
         author = get_object_or_404(User, id=author_id)
