@@ -52,7 +52,7 @@ class FollowSerializer(CustomUserSerializer):
         #           'is_subscribed', 'recipes', 'recipes_count')
         # read_only_fields = ('email', 'username')
         model = Follow
-        fields = ('author', 'user')
+        fields = ('author', 'user', 'recipes_count', 'recipes')
 
     def validate_follow(self, data):
         author = get_object_or_404(User, id=data['author'])
