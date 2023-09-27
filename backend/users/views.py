@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
+from djoser.permissions import CurrentUserOrAdminOrReadOnly
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -17,12 +18,11 @@ class CustomUserViewSet(UserViewSet):
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
     pagination_class = CustomPageNumberPagination
-    # permission_classes = (IsAuthenticatedOrReadOnly,)
 
     @action(
         methods=['post', 'delete'],
         detail=True,
-        permission_classes=[IsAuthenticated]
+        permission_classes=[CurrentUserOrAdminOrReadOnly]
     )
     def subscribe(self, request, **kwargs):
         user = request.user
