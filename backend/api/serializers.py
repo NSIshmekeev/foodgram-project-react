@@ -52,8 +52,6 @@ class FollowSerializer(CustomUserSerializer):
         read_only_fields = ('email', 'username')
 
     def validate_follow(self, data):
-        # author = get_object_or_404(User, id=data['author'])
-        # user = get_object_or_404(User, id=data['user'])
         author = self.instance
         user = self.context.get('request').user
         if Follow.objects.filter(author=author, user=user).exists():

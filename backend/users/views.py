@@ -28,9 +28,6 @@ class CustomUserViewSet(UserViewSet):
         author = get_object_or_404(User, id=id)
 
         if request.method == 'POST':
-            # data = {'user': user.id, 'author': author.id}
-            # serializer = FollowSerializer(data=data)
-            # serializer.is_valid(raise_exception=True)
             serializer = FollowSerializer(author, data=request.data,
                                           context={"request": request})
             serializer.is_valid(raise_exception=True)
