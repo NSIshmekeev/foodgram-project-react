@@ -28,9 +28,9 @@ class CustomUserViewSet(UserViewSet):
         author = get_object_or_404(User, id=id)
 
         if request.method == 'POST':
-            data = {'user': user.id,
-                    'author': author.id}
-            serializer = FollowSerializer(author, data=data)
+            # data = {'user': user.id,
+            #         'author': author.id}
+            serializer = FollowSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             Follow.objects.create(user=user, author=author)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
