@@ -6,12 +6,16 @@ services:
       - db:/var/lib/postgresql/data/
     restart: always
     env_file:
-      - ./.env
+      - ../.env
 
   frontend:
-    image: nikitaishmekeev/foodgram_frontend:latest
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
     volumes:
       - ../frontend/:/app/result_build/
+    depends_on:
+      - backend
 
   nginx:
     image: nginx:1.22.1
@@ -27,14 +31,16 @@ services:
       - frontend
 
   backend:
-    image: nikitaishmekeev/foodgram_backend:latest
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
     volumes:
       - static:/app/static/
       - media:/app/media/
     depends_on:
       - db
     env_file:
-      - ./.env
+      - ../.env
 
 volumes:
   db:
