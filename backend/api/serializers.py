@@ -1,4 +1,5 @@
 from django.db.models import F
+from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import status
@@ -20,7 +21,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
                   'password')
 
 
-class CustomUserSerializer(UserSerializer):
+class CustomUserSerializer(ModelSerializer):
     is_subscribed = SerializerMethodField(read_only=True)
 
     def get_is_subscribed(self, author):
@@ -45,15 +46,17 @@ class FollowSerializer(CustomUserSerializer):
     recipes = SerializerMethodField()
     recipes_count = SerializerMethodField()
 
-    class Meta(UserSerializer.Meta):
-        model = User
-        fields = ('id', 'username', 'first_name', 'last_name', 'email',
-                  'is_subscribed', 'recipes', 'recipes_count')
-        read_only_fields = ('email', 'username')
+    class Meta(CustomUserSerializer.Meta):
+        # model = User
+        # fields = ('id', 'username', 'first_name', 'last_name', 'email',
+        #           'is_subscribed', 'recipes', 'recipes_count')
+        # read_only_fields = ('email', 'username')
+        model = Follow
+        fields = ('author', 'user')
 
     def validate_follow(self, data):
-        author = self.instance
-        user = self.context.get('request').user
+        author = get_object_or_404(User, id=data['author'])
+        user = get_object_or_404(User, id=data['user'])
         if Follow.objects.filter(author=author, user=user).exists():
             raise ValidationError(
                 detail='Вы уже подписаны',
