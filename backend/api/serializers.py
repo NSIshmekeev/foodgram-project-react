@@ -1,16 +1,14 @@
-from rest_framework.serializers import (ModelSerializer,
-                                        SerializerMethodField,
-                                        IntegerField,
-                                        PrimaryKeyRelatedField)
-from rest_framework.exceptions import ValidationError
-from rest_framework import status
 from django.db.models import F
-from djoser.serializers import UserSerializer, UserCreateSerializer
+from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
-
-from users.models import User, Follow
-from recipes.models import (Recipe, Tag, Ingredient, IngredientInRecipe,
-                            Favourite, ShoppingList)
+from recipes.models import (Favourite, Ingredient, IngredientInRecipe, Recipe,
+                            ShoppingList, Tag)
+from rest_framework import status
+from rest_framework.exceptions import ValidationError
+from rest_framework.serializers import (IntegerField, ModelSerializer,
+                                        PrimaryKeyRelatedField,
+                                        SerializerMethodField)
+from users.models import Follow, User
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
