@@ -50,20 +50,20 @@ class FollowSerializer(CustomUserSerializer):
         fields = ('id', 'username', 'first_name', 'last_name', 'email',
                   'is_subscribed', 'recipes', 'recipes_count')
 
-    # def validate(self, data):
-    #     author = self.instance
-    #     user = self.context.get('request').user
-    #     if Follow.objects.filter(author=author, user=user).exists():
-    #         raise ValidationError(
-    #             detail='Вы уже подписаны',
-    #             code=status.HTTP_400_BAD_REQUEST
-    #         )
-    #     if user == author:
-    #         raise ValidationError(
-    #             detail='Невозможно подписаться на самого себя',
-    #             code=status.HTTP_400_BAD_REQUEST
-    #         )
-    #     return data
+    def validate(self, data):
+        author = self.instance
+        user = self.context.get('request').user
+        if Follow.objects.filter(author=author, user=user).exists():
+            raise ValidationError(
+                detail='Вы уже подписаны',
+                code=status.HTTP_400_BAD_REQUEST
+            )
+        if user == author:
+            raise ValidationError(
+                detail='Невозможно подписаться на самого себя',
+                code=status.HTTP_400_BAD_REQUEST
+            )
+        return data
 
     def get_recipes(self, author):
         recipes = author.recipes.all()
