@@ -46,12 +46,12 @@ class FollowSerializer(CustomUserSerializer):
     recipes = SerializerMethodField()
     recipes_count = SerializerMethodField()
 
-    class Meta:
-        model = Follow
-        # fields = ('id', 'username', 'first_name', 'last_name', 'email',
-        #           'is_subscribed', 'recipes', 'recipes_count')
-        fields = ('user', 'author')
-        read_only_fields = ('email')
+    class Meta(UserSerializer.Meta):
+        model = User
+        fields = ('id', 'username', 'first_name', 'last_name', 'email',
+                  'is_subscribed', 'recipes', 'recipes_count')
+        # fields = ('user', 'author')
+        read_only_fields = ('email', 'username')
 
     def validate_follow(self, data):
         # author = get_object_or_404(User, id=data['author'])
