@@ -4,7 +4,7 @@
 Проект доступен по адресу: https://ishmekeevfoodgram.ddns.net
 
 Данные для админки:
-admin@admin.ru
+admin@admin.com
 admin
 
 ## Запуск проекта через Docker
